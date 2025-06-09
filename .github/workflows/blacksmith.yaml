@@ -1,0 +1,17 @@
+# .blacksmith.yaml
+workflows:
+  main:
+    jobs:
+      - job: rdp-setup
+        runner: blacksmith-2vcpu-ubuntu-2204
+        steps:
+          - name: Checkout repository
+            uses: actions/checkout@v3
+          - name: Update and Install XRDP and Desktop Environment
+            run: |
+              sudo apt update -y
+              sudo apt upgrade -y
+              sudo apt install -y xfce4 xfce4-goodies tightvncserver xrdp
+              echo "xfce4-session" > ~/.xsession
+              sudo systemctl enable xrdp
+              sudo systemctl start xrdp

@@ -1,15 +1,23 @@
+name: RDP on Linux (Blacksmith)
+
+on:
+  workflow_dispatch:
+
 jobs:
   rdp-setup:
-    name: Start Building...
-    runs-on: blacksmith-2vcpu-ubuntu-2204  # از Blacksmith استفاده شده
+    runs-on: blacksmith-2vcpu-ubuntu-2204
+
     steps:
-      - name: Checkout repository
+      - name: Checkout Repo
         uses: actions/checkout@v3
-      - name: Update and Install XRDP and Desktop Environment
+
+      - name: Install XFCE and XRDP
         run: |
           sudo apt update -y
-          sudo apt upgrade -y
           sudo apt install -y xfce4 xfce4-goodies tightvncserver xrdp
           echo "xfce4-session" > ~/.xsession
           sudo systemctl enable xrdp
           sudo systemctl start xrdp
+
+      - name: Show Public IP
+        run: curl ifconfig.me

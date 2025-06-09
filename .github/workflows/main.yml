@@ -1,0 +1,43 @@
+name: Linux RDP Setup
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  rdp-setup:
+    runs-on: blacksmith-2vcpu-ubuntu-2204  # استفاده از Ubuntu در Blacksmith
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Update and Install XRDP and Desktop Environment
+        run: |
+          sudo apt update -y
+          sudo apt upgrade -y
+          sudo apt install -y xfce4 xfce4-goodies tightvncserver xrdp
+          echo "xfce4-session" > ~/.xsession
+          sudo systemctl enable xrdp
+          sudo systemctl start xrdp
+
+      - name: Set up firewall
+        run: |
+          sudo ufw allow 3389/tcp
+
+      - name: Install and set up VNC server (if needed)
+        run: |
+          tightvncserver :1
+          sudo apt install -y x11vnc
+          x11vnc -storepasswd $HOME/.vnc/passwd
+
+      - name: Start XRDP service
+        run: |
+          sudo systemctl start xrdp
+          sudo systemctl enable xrdp
+
+      - name: Check status
+        run: |
+          sudo systemctl status xrdp
